@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EstructurasDatos.Pilas;
+using System;
+using System.Collections.Generic;
 
 namespace EstructurasDatos.Listas
 {
@@ -6,25 +8,49 @@ namespace EstructurasDatos.Listas
     {
         public T Dato;
         public Lista<T> Anterior, Siguiente;
+        private bool vacia = true;
+
+        public Lista()
+        {
+            vacia = true;
+        }
 
         public Lista(T dato)
         {
             Dato = dato;
             Anterior = null;
             Siguiente = null;
+            vacia = false;
         }
 
-        virtual public void Insertar(T dato)
+        virtual public Lista<T> Insertar(T dato)
         {
-            if (Siguiente != null)
+            if (vacia)
             {
-                Siguiente.Insertar(dato);
+                Dato = dato;
+                vacia = false;
             }
             else
             {
-                Siguiente = new Lista<T>(dato);
-                Siguiente.Anterior = this;
+                if (Siguiente != null)
+                {
+                    Siguiente.Insertar(dato);
+                }
+                else
+                {
+                    Siguiente = new Lista<T>(dato);
+                    Siguiente.Anterior = this;
+                }
             }
+            return this;
+        }
+
+        virtual public Lista<T> InsertarMultiple(List<T> datos)
+        {
+            Lista<T> tmp = this;
+            foreach (T dato in datos)
+                tmp = tmp.Insertar(dato);
+            return tmp;
         }
 
         virtual public Lista<T> Buscar(T dato)

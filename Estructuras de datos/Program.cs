@@ -4,64 +4,49 @@ using EstructurasDatos.Colas;
 using EstructurasDatos.Pilas;
 using EstructurasDatos.Listas;
 using EstructurasDatos.Arboles;
+using System.Collections.Generic;
 
 public class Programa
 {
     public static void testCola()
     {
-        #region cola T = char
-        Cola<char> cola = new Cola<char>((char)(64 + 1));
-        char dato;
-        Console.Write("Insertado     : A,");
-        for (int i = 2; i < 5; i++)
-        {
-            cola.Insertar((char)(64 + i));
-            Console.Write("{0},", (char)(64 + i));
-        }
-        Console.WriteLine();
+        char dato = 'E';
+        List<char> datos = new List<char>{ 'A', 'B', 'C', 'D' };
+        Cola<char> cola = new Cola<char>().InsertarMultiple(datos);
+        cola = cola.Insertar(dato);
+        Console.WriteLine("Insertado     : {0},{1}", String.Join(",", datos.ToArray()), dato);
         Console.WriteLine("Cola inicial  : {0}", cola);
         while (cola != null)
         {
             cola = cola.Sacar(out dato);
             Console.WriteLine("   Elemento sacado {0} - quedan {1}", dato, cola);
         }
-        #endregion
         Console.WriteLine();
     }
 
     public static void testPila()
     {
-        #region pila T = int
-        Pila<int> pila = new Pila<int>(1);
-        int datoPila;
-        Console.Write("Insertado     : 1,");
-        for (int i = 2; i < 5; i++)
-        {
-            pila = pila.Insertar(i);
-            Console.Write("{0},", i);
-        }
-        Console.WriteLine();
+        int dato = 5;
+        List<int> datos = new List<int> { 1, 2, 3, 4};
+        Pila<int> pila = new Pila<int>().InsertarMultiple(datos);
+        pila = pila.Insertar(dato);
+        Console.WriteLine("Insertado     : {0},{1}", String.Join(",", datos.ToArray()), dato);
         Console.WriteLine("Pila inicial  : {0}", pila);
         while (pila != null)
         {
-            pila = pila.Sacar(out datoPila);
-            Console.WriteLine("   Elemento sacado {0} - quedan {1}", datoPila, pila);
+            pila = pila.Sacar(out dato);
+            Console.WriteLine("   Elemento sacado {0} - quedan {1}", dato, pila);
         }
-        #endregion
         Console.WriteLine();
     }
 
     public static void testLista()
     {
-        #region lista T = int
-        Lista<string> lista = new Lista<string>("ZCD");
-        Console.Write("Insertado     : ZCD,");
-        for (int i = 2; i < 6; i++)
-        {
-            lista.Insertar((char)(64 + i) + "CD");
-            Console.Write("{0},", (char)(64+i)+"CD");
-        }
-        Console.WriteLine();
+        string dato = "ACD";
+        List<string> datos = new List<string> { "BCD", "CCD", "DCD", "ECD" };
+        Lista<string> lista = new Lista<string>().InsertarMultiple(datos);
+        lista = lista.Insertar(dato);
+        Console.WriteLine("Insertado     : {0},{1}", String.Join(",", datos.ToArray()), dato);
         Console.WriteLine("Lista inicial : {0}", lista);
 
         string valBuscado = "CCD";
@@ -73,7 +58,6 @@ public class Programa
         valBuscado = valEliminar;
         nodoBuscado = lista.Buscar(valBuscado);
         Console.WriteLine("   Elemento buscado {0} ==> {1}", valBuscado, (nodoBuscado != null) ? nodoBuscado.Dato + " - Encontrado" : "No encontrado");
-        #endregion
         Console.WriteLine();
     }
 
@@ -113,7 +97,9 @@ public class Programa
         testCola();
         testPila();
         testLista();
+        /*
         testArbol();
+        */
     }
 }
 

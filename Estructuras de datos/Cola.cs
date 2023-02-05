@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EstructurasDatos.Pilas;
+using System;
+using System.Collections.Generic;
 
 namespace EstructurasDatos.Colas
 {
@@ -6,20 +8,42 @@ namespace EstructurasDatos.Colas
     {
         public T Dato;
         public Cola<T> Siguiente;
+        private bool vacia = true;
+
+        public Cola()
+        {
+            vacia = true;
+        }
 
         public Cola(T dato)
         {
+            vacia = false;
             Dato = dato;
         }
 
-        virtual public void Insertar(T dato)
+        virtual public Cola<T> Insertar(T dato)
         {
-            if (Siguiente != null)
+            if (vacia)
             {
-                Siguiente.Insertar(dato);
-            } 
+                Dato = dato;
+                vacia = false;
+            }
             else
-                Siguiente = new Cola<T>(dato);
+            {
+                if (Siguiente != null)
+                    Siguiente.Insertar(dato);
+                else
+                    Siguiente = new Cola<T>(dato);
+            }
+            return this;
+        }
+
+        virtual public Cola<T> InsertarMultiple(List<T> datos)
+        {
+            Cola<T> tmp = this;
+            foreach (T dato in datos)
+                tmp = tmp.Insertar(dato);
+            return tmp;
         }
         
         virtual public Cola<T> Sacar(out T retCola)
