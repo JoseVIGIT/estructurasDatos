@@ -5,28 +5,122 @@ namespace EstructurasDatos.Arboles
 	public class ArbolBinario<T> where T : IComparable
 	{
 		public T Dato { get; set; }
-		public ArbolBinario<T> Izquierda, Derecha;
+		public ArbolBinario<T> Padre, Izquierda, Derecha;
 
 		public ArbolBinario(T dato)
 		{
 			Dato = dato;
 		}
 
-		virtual public void InsertarEnArbol(T dato)
+		virtual public ArbolBinario<T> BuscarNodo (T nodo)
+		{
+			ArbolBinario<T> nodoRet = null;
+			switch (nodo.CompareTo(Dato))
+			{
+				case 0:
+					nodoRet=this;
+					break;
+				case -1:
+					if (Izquierda != null)
+                        nodoRet=(Izquierda.BuscarNodo(nodo));
+					break;
+				case 1:
+					if (Derecha != null)
+                        nodoRet = (Derecha.BuscarNodo(nodo));
+					break;
+            }
+			return nodoRet;
+
+        }
+
+        virtual public void InsertarEnArbol(T dato)
 		{
 			if (Dato.CompareTo(dato) > 0)
 			{
 				if (Izquierda == null)
+				{
 					Izquierda = new ArbolBinario<T>(dato);
+					Izquierda.Padre = this;
+				}
 				else
 					Izquierda.InsertarEnArbol(dato);
 			}
 			else
-				if (Derecha == null)
-				Derecha = new ArbolBinario<T>(dato);
-			else
+				if (Derecha == null) 
+				{
+					Derecha = new ArbolBinario<T>(dato);
+					Derecha.Padre = this;
+				}
+            else
 				Derecha.InsertarEnArbol(dato);
 		}
+
+		virtual public ArbolBinario<T> Eliminar (T dato)
+		{
+			ArbolBinario<T> retNodo = BuscarNodo(dato);
+			if (retNodo == null)
+				return this;
+			/*
+			if (retNodo.Padre == null)
+				return null;
+			*/
+
+			if (retNodo.Derecha == null && retNodo.Izquierda == null)
+			{
+
+				if (retNodo.Padre == null)
+				{
+					retNodo = null;
+					return null;
+				}
+
+                if (retNodo.Padre.Dato.CompareTo(retNodo.Dato) > 0)
+					retNodo.Padre.Izquierda = null;
+				else
+                    retNodo.Padre.Derecha = null;
+                retNodo = null;
+				return this;
+			}
+
+			if (retNodo.Derecha != null && retNodo.Izquierda != null)
+			{
+				var datoNuevo = retNodo.Izquierda.Max().Dato;
+				retNodo.Dato = datoNuevo;
+				_= retNodo.Izquierda.Eliminar(datoNuevo);
+				return this;
+			}
+
+			if (retNodo.Derecha != null)
+			{
+				if (retNodo.Padre == null)
+				{
+					retNodo = retNodo.Derecha;
+					retNodo.Padre = null;
+					return retNodo;
+				}
+				else
+				{
+					if (retNodo.Padre.Dato.CompareTo(retNodo.Dato) > 0)
+						retNodo.Padre.Izquierda = retNodo.Derecha;
+					else
+						retNodo.Padre.Derecha = retNodo.Derecha;
+					retNodo = null;
+				}
+				return this;
+			}
+			if (retNodo.Padre == null)
+			{
+				retNodo = retNodo.Izquierda;
+                retNodo.Padre = null;
+                return retNodo;
+            }
+			else
+			{
+				retNodo.Padre.Izquierda = retNodo.Izquierda;
+				retNodo = null;
+			}
+            return this;
+        }
 
 		private string RecorrerArb()
 		{
@@ -45,14 +139,14 @@ namespace EstructurasDatos.Arboles
 			return str.Remove(str.Length - 1);
 		}
 
-		public T Min()
+		public ArbolBinario<T> Min()
 		{
-			return (Izquierda == null) ? Dato : (Izquierda.Min());
+			return (Izquierda == null) ? this : (Izquierda.Min());
 		}
 
-		public T Max()
+		public ArbolBinario<T> Max()
 		{
-			return (Derecha == null) ? Dato : (Derecha.Max());
+			return (Derecha == null) ? this : (Derecha.Max());
 		}
 	}
 
