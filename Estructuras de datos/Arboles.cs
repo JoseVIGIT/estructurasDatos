@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EstructurasDatos.Arboles
 {
@@ -6,10 +7,17 @@ namespace EstructurasDatos.Arboles
 	{
 		public T Dato { get; set; }
 		public ArbolBinario<T> Padre, Izquierda, Derecha;
+		private bool vacia = true;
 
+		public ArbolBinario ()
+		{
+            vacia = true;
+		}
+		
 		public ArbolBinario(T dato)
 		{
 			Dato = dato;
+			vacia = false;
 		}
 
 		virtual public ArbolBinario<T> BuscarNodo (T nodo)
@@ -33,37 +41,52 @@ namespace EstructurasDatos.Arboles
 
         }
 
-        virtual public void InsertarEnArbol(T dato)
+		virtual public ArbolBinario<T> Insertar(T dato)
 		{
-			if (Dato.CompareTo(dato) > 0)
+			if (vacia)
 			{
-				if (Izquierda == null)
-				{
-					Izquierda = new ArbolBinario<T>(dato);
-					Izquierda.Padre = this;
-				}
-				else
-					Izquierda.InsertarEnArbol(dato);
+				Dato = dato;
+				vacia = false;
 			}
 			else
-				if (Derecha == null) 
+			{
+				if (Dato.CompareTo(dato) > 0)
 				{
-					Derecha = new ArbolBinario<T>(dato);
-					Derecha.Padre = this;
+					if (Izquierda == null)
+					{
+						Izquierda = new ArbolBinario<T>(dato);
+						Izquierda.Padre = this;
+					}
+					else
+						Izquierda.Insertar(dato);
 				}
-            else
-				Derecha.InsertarEnArbol(dato);
+				else
+				{
+					if (Derecha == null)
+					{
+						Derecha = new ArbolBinario<T>(dato);
+						Derecha.Padre = this;
+					}
+					else
+						Derecha.Insertar(dato);
+				}
+			}
+			return this;
 		}
 
-		virtual public ArbolBinario<T> Eliminar (T dato)
+        virtual public ArbolBinario<T> InsertarMultiple(List<T> datos)
+        {
+            ArbolBinario<T> tmp = this;
+            foreach (T dato in datos)
+                tmp = tmp.Insertar(dato);
+            return tmp;
+        }
+
+        virtual public ArbolBinario<T> Eliminar (T dato)
 		{
 			ArbolBinario<T> retNodo = BuscarNodo(dato);
 			if (retNodo == null)
 				return this;
-			/*
-			if (retNodo.Padre == null)
-				return null;
-			*/
 
 			if (retNodo.Derecha == null && retNodo.Izquierda == null)
 			{
@@ -133,12 +156,6 @@ namespace EstructurasDatos.Arboles
 			return str;
 		}
 
-		public string RecorrerArbol()
-		{
-			var str = RecorrerArb();
-			return str.Remove(str.Length - 1);
-		}
-
 		public ArbolBinario<T> Min()
 		{
 			return (Izquierda == null) ? this : (Izquierda.Min());
@@ -148,7 +165,13 @@ namespace EstructurasDatos.Arboles
 		{
 			return (Derecha == null) ? this : (Derecha.Max());
 		}
-	}
+
+        public override string ToString()
+        {
+            var str = RecorrerArb();
+            return str.Remove(str.Length - 1);
+        }
+    }
 
 	public class ArbolBinarioAVL<T> : ArbolBinario<T> where T : IComparable
     {

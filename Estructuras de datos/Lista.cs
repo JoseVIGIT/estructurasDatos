@@ -1,5 +1,4 @@
-﻿using EstructurasDatos.Pilas;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace EstructurasDatos.Listas
@@ -18,8 +17,6 @@ namespace EstructurasDatos.Listas
         public Lista(T dato)
         {
             Dato = dato;
-            Anterior = null;
-            Siguiente = null;
             vacia = false;
         }
 
@@ -55,6 +52,8 @@ namespace EstructurasDatos.Listas
 
         virtual public Lista<T> Buscar(T dato)
         {
+            if (EstaVacia())
+                return this;
             var tmp = this;
             while (tmp != null && !tmp.Dato.Equals(dato))
             {
@@ -68,22 +67,65 @@ namespace EstructurasDatos.Listas
             var tmp = Buscar(dato);
             if (tmp != null)
             {
-                tmp.Anterior.Siguiente = tmp.Siguiente;
-                tmp.Siguiente.Anterior = tmp.Anterior;
+                if (tmp.Siguiente == null && tmp.Anterior == null)
+                {
+                    Dato = default;
+                    vacia = true;
+                }
+                else
+                {
+                    tmp.Anterior.Siguiente = tmp.Siguiente;
+                    tmp.Siguiente.Anterior = tmp.Anterior;
+                }
             }
             return this;
+        }
+
+        public Lista<T> Min()
+        {
+            var min = this;
+            var tmp = this;
+            while (tmp != null)
+            {
+                if (min.Dato.CompareTo(tmp.Dato) > 0)
+                    min = tmp;
+                tmp = tmp.Siguiente;
+            }
+            return (min);
+        }
+
+        public Lista<T> Max()
+        {
+            var min = this;
+            var tmp = this;
+            while (tmp != null)
+            {
+                if (min.Dato.CompareTo(tmp.Dato) < 0)
+                    min = tmp;
+                tmp= tmp.Siguiente;
+            }
+            return (min);
         }
 
         public override string ToString()
         {
             var tmp = this;
             var str = "";
+            if (tmp.EstaVacia())
+            {
+                return "";
+            }
             while (tmp != null)
             {
                 str += tmp.Dato + ",";
                 tmp = tmp.Siguiente;
             }
             return str.Remove(str.Length - 1);
+        }
+
+        public bool EstaVacia()
+        {
+            return vacia;
         }
     }
 }

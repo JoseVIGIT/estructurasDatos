@@ -1,5 +1,4 @@
-﻿using EstructurasDatos.Colas;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace EstructurasDatos.Pilas
@@ -47,7 +46,17 @@ namespace EstructurasDatos.Pilas
 
         virtual public Pila<T> Sacar(out T retCola)
         {
+            if (EstaVacia())
+            {
+                retCola = default;
+                return null;
+            }
             retCola = this.Dato;
+            if (this.Anterior == null)
+            {
+                this.vacia = true;
+                return this;
+            }
             return this.Anterior;
         }
 
@@ -55,6 +64,10 @@ namespace EstructurasDatos.Pilas
         {
             var tmp = this;
             var str = "";
+            if (tmp.EstaVacia())
+            {
+                return "";
+            }
             while (tmp != null)
 
             {
@@ -63,6 +76,11 @@ namespace EstructurasDatos.Pilas
             }
 
             return str.Remove(str.Length - 1);
+        }
+
+        public bool EstaVacia()
+        {
+            return vacia;
         }
     }
 }
