@@ -1,124 +1,134 @@
-﻿using System;
+﻿using EstructurasDatos.Colas;
+using System;
 using System.Collections.Generic;
 
 namespace EstructurasDatos.Listas
 {
-    public class Lista<T> where T : IComparable
+    public class Nodo<T>
     {
         public T Dato;
-        public Lista<T> Anterior, Siguiente;
+        public Nodo<T> Anterior, Siguiente;
+    }
+
+    public class Lista<T> where T : IComparable
+    {
+        public Nodo<T> primero, ultimo;
         private bool vacia = true;
 
         public Lista()
         {
             vacia = true;
+            primero = ultimo = null;
         }
 
         public Lista(T dato)
         {
-            Dato = dato;
-            vacia = false;
+            Insertar(dato);
+        }
+
+        public Lista(List<T> datos)
+        {
+            InsertarMultiple(datos);
         }
 
         virtual public Lista<T> Insertar(T dato)
         {
+            var nod = new Nodo<T>();
+            nod.Dato = dato;
+            nod.Siguiente = null;
             if (vacia)
             {
-                Dato = dato;
                 vacia = false;
+                primero = ultimo = nod;
             }
             else
             {
-                if (Siguiente != null)
-                {
-                    Siguiente.Insertar(dato);
-                }
-                else
-                {
-                    Siguiente = new Lista<T>(dato);
-                    Siguiente.Anterior = this;
-                }
+                nod.Anterior = ultimo;
+                ultimo.Siguiente = nod;
+                ultimo = ultimo.Siguiente;
             }
             return this;
         }
 
         virtual public Lista<T> InsertarMultiple(List<T> datos)
         {
-            Lista<T> tmp = this;
             foreach (T dato in datos)
-                tmp = tmp.Insertar(dato);
-            return tmp;
+                Insertar(dato);
+            return this;
         }
 
-        virtual public Lista<T> Buscar(T dato)
+        virtual public bool Buscar(T dato, out T resultado)
         {
             if (EstaVacia())
-                return this;
-            var tmp = this;
-            while (tmp != null && !tmp.Dato.Equals(dato))
             {
-                tmp = tmp.Siguiente;
+                resultado = default;
+                return false;
             }
-            return tmp;
-        }
-
-        virtual public Lista<T> Eliminar(T dato)
-        {
-            var tmp = Buscar(dato);
-            if (tmp != null)
+            var nodoTmp = primero;
+            while (nodoTmp != null && !nodoTmp.Dato.Equals(dato))
             {
-                if (tmp.Siguiente == null && tmp.Anterior == null)
+                nodoTmp = nodoTmp.Siguiente;
+            }
+            if (nodoTmp == null)
+            {
+                resultado = default;
+                return false;
+            }
+            resultado = nodoTmp.Dato;
+            return true;
+        }
+        
+        virtual public T Eliminar(T dato)
+        {
+            if (EstaVacia())
+                return default;
+            
+            var nodoTmp = primero;
+            while (nodoTmp != null && !nodoTmp.Dato.Equals(dato))
+            {
+                nodoTmp = nodoTmp.Siguiente;
+            }
+            if (nodoTmp == null)
+                return default;
+            else
+            {
+                if (nodoTmp.Anterior == null && nodoTmp.Siguiente == null)
                 {
-                    Dato = default;
+                    primero = ultimo = null;
                     vacia = true;
                 }
                 else
                 {
-                    tmp.Anterior.Siguiente = tmp.Siguiente;
-                    tmp.Siguiente.Anterior = tmp.Anterior;
+                    if (nodoTmp.Anterior != null && nodoTmp.Siguiente != null)
+                    {
+                        nodoTmp.Anterior.Siguiente = nodoTmp.Siguiente;
+                        nodoTmp.Siguiente.Anterior = nodoTmp.Anterior;
+                    }
+                    else
+                    {
+                        if (nodoTmp.Anterior == null)
+                        {
+                            nodoTmp.Siguiente.Anterior = null;
+                            primero = nodoTmp.Siguiente;
+                        }
+                        else
+                            nodoTmp.Anterior.Siguiente = null;
+                    }
                 }
             }
-            return this;
-        }
-
-        public Lista<T> Min()
-        {
-            var min = this;
-            var tmp = this;
-            while (tmp != null)
-            {
-                if (min.Dato.CompareTo(tmp.Dato) > 0)
-                    min = tmp;
-                tmp = tmp.Siguiente;
-            }
-            return (min);
-        }
-
-        public Lista<T> Max()
-        {
-            var min = this;
-            var tmp = this;
-            while (tmp != null)
-            {
-                if (min.Dato.CompareTo(tmp.Dato) < 0)
-                    min = tmp;
-                tmp= tmp.Siguiente;
-            }
-            return (min);
+            return nodoTmp.Dato;
         }
 
         public override string ToString()
         {
-            var tmp = this;
-            var str = "";
-            if (tmp.EstaVacia())
-            {
+            if (EstaVacia())
                 return "";
-            }
-            while (tmp != null)
+            var str = "";
+            var nodoTmp = primero;
+            while (nodoTmp != null)
             {
-                str += tmp.Dato + ",";
-                tmp = tmp.Siguiente;
+                str += nodoTmp.Dato + ",";
+                nodoTmp = nodoTmp.Siguiente;
             }
             return str.Remove(str.Length - 1);
         }
@@ -127,5 +137,32 @@ namespace EstructurasDatos.Listas
         {
             return vacia;
         }
+
+        virtual public T Min()
+        {
+            var min = primero;
+            var tmp = primero;
+            while (tmp != null)
+            {
+                if (min.Dato.CompareTo(tmp.Dato) > 0)
+                    min = tmp;
+                tmp = tmp.Siguiente;
+            }
+            return (min.Dato);
+        }
+
+        virtual public T Max()
+        {
+            var min = primero;
+            var tmp = primero;
+            while (tmp != null)
+            {
+                if (min.Dato.CompareTo(tmp.Dato) < 0)
+                    min = tmp;
+                tmp = tmp.Siguiente;
+            }
+            return (min.Dato);
+        }
+
     }
 }

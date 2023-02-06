@@ -3,76 +3,83 @@ using System.Collections.Generic;
 
 namespace EstructurasDatos.Pilas
 {
-    public class Pila<T> where T : IComparable
+    public class Nodo<T>
     {
         public T Dato;
-        public Pila<T> Anterior;
+        public Nodo<T> Anterior;
+    }
+
+    public class Pila<T> where T : IComparable
+    {
+        public Nodo<T> nodo;
         private bool vacia = true;
 
         public Pila()
         {
             vacia = true;
+            nodo = null;
         }
 
         public Pila(T dato)
         {
-            vacia = false;
-            Dato = dato;
+            Insertar(dato);
+        }
+
+        public Pila(List<T> datos)
+        {
+            InsertarMultiple(datos);
         }
 
         virtual public Pila<T> Insertar(T dato)
         {
+            var nod = new Nodo<T>();
+            nod.Dato = dato;
+            nod.Anterior = null;
             if (vacia)
             {
-                Dato = dato;
                 vacia = false;
-                return this;
+                nodo = nod;
             }
             else
             {
-                var nuevo = new Pila<T>(dato);
-                nuevo.Anterior = this;
-                return nuevo;
+                nod.Anterior = nodo;
+                nodo = nod;
             }
+            return this;
         }
 
         virtual public Pila<T> InsertarMultiple(List<T> datos)
         {
-            Pila<T> tmp = this;
             foreach (T dato in datos)
-                tmp = tmp.Insertar(dato);
-            return tmp;
+                Insertar(dato);
+            return this;
         }
 
-        virtual public Pila<T> Sacar(out T retCola)
+        virtual public T Sacar()
         {
             if (EstaVacia())
+                return default;
+            var nodoTmp = nodo;
+            if (nodo.Anterior != null)
+                nodo = nodo.Anterior;
+            else
             {
-                retCola = default;
-                return null;
+                nodo = null;
+                vacia = true;
             }
-            retCola = this.Dato;
-            if (this.Anterior == null)
-            {
-                this.vacia = true;
-                return this;
-            }
-            return this.Anterior;
+            return nodoTmp.Dato;
         }
 
         public override string ToString()
         {
-            var tmp = this;
-            var str = "";
-            if (tmp.EstaVacia())
-            {
+            if (EstaVacia())
                 return "";
-            }
-            while (tmp != null)
-
+            var str = "";
+            var nodoTmp = nodo;
+            while (nodoTmp != null)
             {
-                str += tmp.Dato + ",";
-                tmp = tmp.Anterior;
+                str += nodoTmp.Dato + ",";
+                nodoTmp = nodoTmp.Anterior;
             }
 
             return str.Remove(str.Length - 1);

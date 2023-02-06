@@ -3,75 +3,85 @@ using System.Collections.Generic;
 
 namespace EstructurasDatos.Colas
 {
-    public class Cola<T> where T : IComparable
+    public class Nodo<T>
     {
         public T Dato;
-        public Cola<T> Siguiente;
+        public Nodo<T> Siguiente;
+    }
+
+    public class Cola<T> where T : IComparable
+    {
+        //Nodo<T> ultimo ... Añadido para agilizar la inserción sin tener que recorrer toda la cola
+        //Nodo<T> primero ... es el elemento que se usará para recorrer la cola sacando elementos en orden adecuado
+        public Nodo<T> primero, ultimo; 
         private bool vacia = true;
 
         public Cola()
         {
             vacia = true;
+            primero = ultimo = null;
         }
 
         public Cola(T dato)
         {
-            vacia = false;
-            Dato = dato;
+            Insertar(dato);
+        }
+
+        public Cola(List<T> datos)
+        {
+            InsertarMultiple(datos);
         }
 
         virtual public Cola<T> Insertar(T dato)
         {
+            var nod = new Nodo<T>();
+            nod.Dato = dato;
+            nod.Siguiente = null; 
             if (vacia)
             {
-                Dato = dato;
                 vacia = false;
+                primero = ultimo = nod;
             }
             else
             {
-                if (Siguiente != null)
-                    Siguiente.Insertar(dato);
-                else
-                    Siguiente = new Cola<T>(dato);
+                ultimo.Siguiente = nod;
+                ultimo = ultimo.Siguiente;
             }
             return this;
         }
 
         virtual public Cola<T> InsertarMultiple(List<T> datos)
         {
-            Cola<T> tmp = this;
             foreach (T dato in datos)
-                tmp = tmp.Insertar(dato);
-            return tmp;
+                Insertar(dato);
+            return this;
         }
         
-        virtual public Cola<T> Sacar(out T retCola)
+        virtual public T Sacar()
         {
             if (EstaVacia())
+                return default;
+            var primeroTmp = primero;
+            if (primero.Siguiente != null)
+                primero = primero.Siguiente;
+            else
             {
-                retCola = default;
-                return null;
+                primero = ultimo = null;
+                vacia = true;
             }
-            retCola = this.Dato;
-            if (this.Siguiente == null)
-            {
-                this.vacia = true;
-                return this;
-            }
-            return this.Siguiente;
+            return primeroTmp.Dato;
         }
 
         public override string ToString()
         {
-            var tmp = this;
-            var str = "";
-            if (tmp.EstaVacia()) {
+            if (EstaVacia())
                 return "";
-            }
-            while (tmp != null) 
+            var str = "";
+            var nodoTmp = primero;
+            while (nodoTmp != null) 
             {
-                str += tmp.Dato + ",";
-                tmp = tmp.Siguiente;
+                str += nodoTmp.Dato + ",";
+                nodoTmp = nodoTmp.Siguiente;
             }
             return str.Remove(str.Length - 1);
         }

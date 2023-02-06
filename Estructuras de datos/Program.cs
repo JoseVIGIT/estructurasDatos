@@ -19,17 +19,16 @@ public class Programa
     {
         char dato = 'A';
         List<char> datos = new List<char>{ 'B', 'C', 'D' };
-        Cola<char> cola = new Cola<char>().InsertarMultiple(datos);
-        cola = cola.Insertar(dato);
+        Cola<char> cola = new Cola<char>(datos).Insertar(dato);
         Console.WriteLine("Insertado     : {0},{1}", String.Join(",", datos.ToArray()), dato);
         Console.WriteLine("Cola inicial  : {0}", cola);
 
         while (!cola.EstaVacia())
         {
-            cola = cola.Sacar(out dato);
+            dato = cola.Sacar();
             Console.WriteLine("   Elemento sacado {0} - quedan {1}", dato, cola);
         }
-        Console.WriteLine("   Estructura vacia  - {0} , quedan {1}", cola.EstaVacia(), cola);
+        Console.WriteLine("   Estruct. vacia {0}", cola.EstaVacia());
         Console.WriteLine();
     }
 
@@ -37,17 +36,17 @@ public class Programa
     {
         int dato = 1;
         List<int> datos = new List<int> { 2, 3, 4};
-        Pila<int> pila = new Pila<int>().InsertarMultiple(datos);
-        pila = pila.Insertar(dato);
+        Pila<int> pila = new Pila<int>(datos).Insertar(dato);
         Console.WriteLine("Insertado     : {0},{1}", String.Join(",", datos.ToArray()), dato);
         Console.WriteLine("Pila inicial  : {0}", pila);
 
         while (!pila.EstaVacia())
         {
-            pila = pila.Sacar(out dato);
+            dato = pila.Sacar();
             Console.WriteLine("   Elemento sacado {0} - quedan {1}", dato, pila);
         }
-        Console.WriteLine("   Estructura vacia  - {0} , quedan {1}", pila.EstaVacia(), pila);
+        dato = pila.Sacar();
+        Console.WriteLine("   Estruct. vacia {0}", pila.EstaVacia());
         Console.WriteLine();
     }
 
@@ -55,21 +54,21 @@ public class Programa
     {
         string dato = "ACD";
         List<string> datos = new List<string> { "BCD", "CCD", "DCD" };
-        Lista<string> lista = new Lista<string>().InsertarMultiple(datos);
-        lista = lista.Insertar(dato);
+        Lista<string> lista = new Lista<string>(datos).Insertar(dato);
         Console.WriteLine("Insertado     : {0},{1}", String.Join(",", datos.ToArray()), dato);
         Console.WriteLine("Lista inicial : {0}", lista);
 
-        Console.WriteLine("   Min: {0} , Max: {1}", lista.Min().Dato, lista.Max().Dato);
-        string valBuscado = "CCD";
-        string valEliminar = "CCD";
-        var nodoBuscado = lista.Buscar(valBuscado);
-        Console.WriteLine("   Elemento buscado {0} - {1}", valBuscado, (nodoBuscado != null) ? nodoBuscado.Dato + " - Encontrado" : "No encontrado");
-        lista = lista.Eliminar(valEliminar);
-        Console.WriteLine("   Elemento elimina {0} - {1}", valEliminar, lista);
-        valBuscado = valEliminar;
-        nodoBuscado = lista.Buscar(valBuscado);
-        Console.WriteLine("   Elemento buscado {0} - {1}", valBuscado, (nodoBuscado != null) ? nodoBuscado.Dato + " - Encontrado" : "No encontrado");
+        Console.WriteLine("   Min: {0} , Max: {1}", lista.Min(), lista.Max());
+        string valEliminar = "", valBuscado = "", valBusRes = "";
+        bool encontrado = false;
+        valBuscado = "CCD"; encontrado = lista.Buscar(valBuscado, out valBusRes);
+        Console.WriteLine("   Elemento buscado {0} - {1,-5} - {2}", valBuscado, encontrado, lista);
+        valBuscado = "XCD"; encontrado = lista.Buscar(valBuscado, out valBusRes);
+        Console.WriteLine("   Elemento buscado {0} - {1,-5} - {2}", valBuscado, encontrado, lista);
+        valEliminar = "DCD"; lista.Eliminar(valEliminar); Console.WriteLine("   Elemento sacado  {0} - {1}", valEliminar, lista);
+        valEliminar = "BCD"; lista.Eliminar(valEliminar); Console.WriteLine("   Elemento sacado  {0} - {1}", valEliminar, lista);
+        valEliminar = "ACD"; lista.Eliminar(valEliminar); Console.WriteLine("   Elemento sacado  {0} - {1}", valEliminar, lista);
+        valEliminar = "CCD"; lista.Eliminar(valEliminar); Console.WriteLine("   Elemento sacado  {0} - {1}", valEliminar, lista);
         Console.WriteLine();
     }
 
